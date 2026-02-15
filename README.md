@@ -24,7 +24,7 @@ cp -r codesphere/ ~/.claude/skills/codesphere/
 Clone and symlink:
 
 ```bash
-git clone https://github.com/<your-username>/codesphere-skill.git
+git clone https://github.com/LeonHartmann/codesphere-skill.git
 ln -s "$(pwd)/codesphere-skill/codesphere" ~/.claude/skills/codesphere
 ```
 
