@@ -5,7 +5,7 @@ A comprehensive [Claude Code](https://docs.anthropic.com/en/docs/claude-code) sk
 ## What It Does
 
 - Generates and validates Codesphere CI pipeline configurations (`ci.yml`)
-- Handles both single-service and landscape (multi-service) deployments with `schemaVersion: v0.2`
+- Handles all deployments using `schemaVersion: v0.2`, including single-app and multi-service landscapes
 - Provides deployment guidance including domains, scaling, environment variables, and networking
 - Covers the full platform: CI/CD, workspaces, CLI (`cs-go`), Public API, and GitHub Actions integration
 
@@ -61,7 +61,7 @@ Once installed, Claude Code will automatically use this skill when you:
 
 ## Key Topics Covered
 
-- **CI Pipeline Configuration** — Both single-service and landscape (v0.2) schemas
+- **CI Pipeline Configuration** — `schemaVersion: v0.2` with examples for 10+ frameworks
 - **Landscape Deployments** — Multi-service architecture, private networking, managed databases
 - **Critical Constraints** — Port 3000, host 0.0.0.0, persistent storage, Nix packages
 - **Environment Variables** — Setting, propagation, built-in variables
