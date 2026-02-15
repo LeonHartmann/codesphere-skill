@@ -212,5 +212,5 @@ Nix packages persist in `/nix/store` and are accessible to all services in a lan
 | Workspace stuck rebooting | Invalid CI pipeline | Check `ci.yml` syntax and run stage |
 | GitHub repos missing | OAuth token expired | Re-grant repository access |
 | Env var changes not working | Run stage not restarted | Re-run the CI Pipeline Run stage |
-| Landscape deployment fails | Missing `.codesphere-internal/` in `.gitignore` | Add `.codesphere-internal/` to `.gitignore` |
-| Can't enable landscape | Existing `ci.yml` format | Delete old `ci.yml`, recreate with `schemaVersion: v0.2` |
+| Deployment fails | Missing `.codesphere-internal/` in `.gitignore` | Add `.codesphere-internal/` to `.gitignore` |
+| Pipeline not parsing | Missing `schemaVersion: v0.2` or using flat `run.steps[]` | Ensure `schemaVersion: v0.2` is first line and use named services under `run` |

@@ -5,7 +5,6 @@
 - Shared vs independent resources
 - Networking (private communication, public access, path-based routing)
 - Complete examples (frontend+backend, app+Postgres, Ollama+WebUI, n8n+Ollama)
-- Migrating from single-service to landscape
 - Managed services (Postgres, MySQL, Redis, MongoDB)
 - Service naming conventions
 
@@ -263,15 +262,6 @@ run:
           path: /model
           stripPath: true
 ```
-
-## Migrating to Landscape
-
-If you have an existing single-service `ci.yml` and want to migrate:
-
-1. Use the **"Migrate to Landscape"** button in the CI editor (Setup > CI), OR
-2. Delete the existing `ci.yml` and create a new one with `schemaVersion: v0.2`
-
-**Important:** An existing single-service `ci.yml` may block landscape parsing. If migration button doesn't work, delete and recreate.
 
 ## Managed Services
 

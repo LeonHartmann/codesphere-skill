@@ -2,10 +2,9 @@
 
 ## Contents
 - File location and naming
-- Schema versions (single-service vs landscape v0.2)
+- Schema overview (schemaVersion v0.2)
 - Step schema
-- Single-service schema
-- Landscape schema (v0.2) with managed services
+- Full schema specification with managed services
 - Complete examples (Node.js, Next.js, Python, Go, Ruby, PHP, Vue.js, LLM)
 - CI profiles
 - Pipeline stage behavior
@@ -21,17 +20,9 @@ CI config files live at the **project root** (`/home/user/app/`):
 
 Profiles are created via: **Setup > CI > Add Profile** in the Codesphere IDE.
 
-## Schema Versions
+## Schema Overview
 
-### No schemaVersion (Single-Service)
-
-The original format. Used for single-service deployments. The `run` section uses a flat `steps` array.
-
-### schemaVersion: v0.2 (Landscape / Multi-Service)
-
-Required for landscape deployments (multiple services in one workspace). The `run` section uses named service keys instead of a flat `steps` array. Each service gets its own `steps`, `plan`, `replicas`, and `network` configuration.
-
-**Key difference:** `run.steps[]` (single) vs `run.<serviceName>.steps[]` (landscape).
+All Codesphere CI pipelines use `schemaVersion: v0.2`. The `run` section uses named service keys, each with its own `steps`, `plan`, `replicas`, and `network` configuration. This applies to both single-app and multi-service deployments.
 
 ## Step Schema
 
@@ -51,24 +42,7 @@ steps:
     command: "./start.sh"
 ```
 
-## Single-Service Schema
-
-```yaml
-prepare:
-  steps:
-    - name: <string>        # optional
-      command: <string>      # required
-test:
-  steps:
-    - name: <string>
-      command: <string>
-run:
-  steps:
-    - name: <string>
-      command: <string>
-```
-
-## Landscape Schema (v0.2)
+## Full Schema (v0.2)
 
 ```yaml
 schemaVersion: v0.2          # REQUIRED
@@ -128,6 +102,7 @@ run:
 ### Node.js (Express)
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -137,14 +112,26 @@ test:
     - name: Run tests
       command: npm test
 run:
-  steps:
-    - name: Start server
-      command: npm start
+  app:
+    steps:
+      - name: Start server
+        command: npm start
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### Next.js
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -154,14 +141,26 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Start Next.js
-      command: npm start
+  app:
+    steps:
+      - name: Start Next.js
+        command: npm start
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### Python (FastAPI with Pipenv)
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -169,16 +168,28 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Start server
-      command: >
-        source "$(pipenv --venv)/bin/activate" &&
-        uvicorn main:app --reload --host 0.0.0.0 --port 3000
+  app:
+    steps:
+      - name: Start server
+        command: >
+          source "$(pipenv --venv)/bin/activate" &&
+          uvicorn main:app --reload --host 0.0.0.0 --port 3000
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### Python (pip with target)
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -186,14 +197,26 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Start server
-      command: PYTHONPATH=/home/user/app/pipLib python3 server.py
+  app:
+    steps:
+      - name: Start server
+        command: PYTHONPATH=/home/user/app/pipLib python3 server.py
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### Go
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Build
@@ -203,14 +226,26 @@ test:
     - name: Run tests
       command: go test ./...
 run:
-  steps:
-    - name: Start server
-      command: ./app
+  app:
+    steps:
+      - name: Start server
+        command: ./app
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### Ruby on Rails
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -222,14 +257,26 @@ test:
     - name: Run tests
       command: bundle exec rails test
 run:
-  steps:
-    - name: Start Rails
-      command: bundle exec rails server -b 0.0.0.0 -p 3000
+  app:
+    steps:
+      - name: Start Rails
+        command: bundle exec rails server -b 0.0.0.0 -p 3000
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### PHP (Laravel)
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -237,14 +284,26 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Start Laravel
-      command: php artisan serve --host=0.0.0.0 --port=3000
+  app:
+    steps:
+      - name: Start Laravel
+        command: php artisan serve --host=0.0.0.0 --port=3000
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### Vue.js
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -254,14 +313,26 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Start preview server
-      command: yarn preview --host --port 3000
+  app:
+    steps:
+      - name: Start preview server
+        command: yarn preview --host --port 3000
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### Python LLM (Ollama/llama.cpp)
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install dependencies
@@ -273,17 +344,29 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Start LLM server
-      command: >
-        pipenv run python3 -m llama_cpp.server
-        --port 3000 --host 0.0.0.0
-        --model /home/user/app/models/llama-2-7b-chat.Q4_K_M.gguf
+  app:
+    steps:
+      - name: Start LLM server
+        command: >
+          pipenv run python3 -m llama_cpp.server
+          --port 3000 --host 0.0.0.0
+          --model /home/user/app/models/llama-2-7b-chat.Q4_K_M.gguf
+    plan: 22
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ### With Custom Node.js Version
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Set Node.js version
@@ -295,11 +378,22 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Set Node.js version
-      command: sudo n 20
-    - name: Start server
-      command: npm start
+  app:
+    steps:
+      - name: Set Node.js version
+        command: sudo n 20
+      - name: Start server
+        command: npm start
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 **Important:** `sudo n <version>` must appear in BOTH `prepare` and `run` stages — it does not persist.
@@ -307,6 +401,7 @@ run:
 ### With Nix Packages
 
 ```yaml
+schemaVersion: v0.2
 prepare:
   steps:
     - name: Install Node.js 24
@@ -316,9 +411,20 @@ prepare:
 test:
   steps: []
 run:
-  steps:
-    - name: Start server
-      command: npm start
+  app:
+    steps:
+      - name: Start server
+        command: npm start
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: true
+      paths:
+        - port: 3000
+          path: /
+          stripPath: false
 ```
 
 ## CI Profiles

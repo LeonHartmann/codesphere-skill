@@ -34,39 +34,9 @@ CI config lives at project root (NOT in a `.codesphere/` directory):
 - Default: `ci.yml`
 - Profiles: `ci.<profilename>.yml` (e.g., `ci.production.yml`)
 
-### Choosing a Schema
+All CI pipelines use `schemaVersion: v0.2`. Even single-app deployments use this format with one service under `run`.
 
-```dot
-digraph schema_choice {
-    "How many services?" [shape=diamond];
-    "Single service" [shape=box, label="No schemaVersion\n(simple format)"];
-    "Multiple services" [shape=box, label="schemaVersion: v0.2\n(landscape format)"];
-    "Need managed DB?" [shape=diamond];
-
-    "How many services?" -> "Single service" [label="one"];
-    "How many services?" -> "Multiple services" [label="two or more"];
-    "How many services?" -> "Need managed DB?" [label="one + database"];
-    "Need managed DB?" -> "Multiple services" [label="managed\n(Postgres, etc.)"];
-    "Need managed DB?" -> "Single service" [label="external DB"];
-}
-```
-
-### Single-Service Format (no schemaVersion)
-
-```yaml
-prepare:
-  steps:
-    - name: Install dependencies
-      command: npm install
-test:
-  steps: []
-run:
-  steps:
-    - name: Start server
-      command: npm start
-```
-
-### Landscape Format (schemaVersion: v0.2)
+### CI Pipeline Format (schemaVersion: v0.2)
 
 ```yaml
 schemaVersion: v0.2
@@ -111,10 +81,8 @@ For landscape-specific details, see [references/landscape-deployments.md](refere
 When asked to create or fix a `ci.yml`:
 
 1. **Detect project type** — check `package.json`, `requirements.txt`, `go.mod`, `Gemfile`, `pom.xml`, `Cargo.toml`, etc.
-2. **Ask single or landscape** — does the user need multiple services (frontend + backend, app + database)?
-3. **Generate the correct schema**:
-   - Single service → no `schemaVersion`, flat `run.steps[]`
-   - Multi-service → `schemaVersion: v0.2`, named services under `run`
+2. **Ask about services** — does the user need multiple services (frontend + backend, app + database)?
+3. **Generate with `schemaVersion: v0.2`** — always use named services under `run`, even for single-app deployments
 4. **Apply critical constraints** — host `0.0.0.0`, port `3000`, Nix for OS packages
 5. **Validate .gitignore** — ensure `.codesphere-internal/` is listed
 6. **Add Node.js version management** to both `prepare` and `run` if applicable
@@ -155,9 +123,8 @@ Before deploying, verify:
 | Using `apt-get` or `sudo` for packages | Use `nix-env -iA nixpkgs.<package>` instead |
 | Files written outside `/home/user/app` | Move to `/home/user/app` — other paths don't persist |
 | Node.js version only in `prepare` | Add `sudo n <version>` to `run` stage too (not persistent across stages) |
-| Using `run.steps[]` with `schemaVersion: v0.2` | Landscape uses named services: `run.<serviceName>.steps[]` |
-| Missing `schemaVersion: v0.2` in multi-service config | Add `schemaVersion: v0.2` as first line |
-| Existing `ci.yml` blocks landscape migration | Delete old `ci.yml` and recreate for landscape format |
+| Using `run.steps[]` instead of named services | Use `run.<serviceName>.steps[]` — flat `run.steps[]` is not supported |
+| Missing `schemaVersion: v0.2` | Add `schemaVersion: v0.2` as first line of `ci.yml` |
 | Environment variable changes not taking effect | Re-run the CI Pipeline Run stage after changing env vars |
 | Replicas writing to same files | Use `CS_REPLICA` env var to create per-replica file paths |
 | Path routing not working | Application routes must include the path prefix in code |
@@ -172,7 +139,7 @@ Before deploying, verify:
 
 ## Reference Files
 
-- **[references/ci-pipeline.md](references/ci-pipeline.md)** — Full CI schema specification for both versions, step fields, complete examples per framework
+- **[references/ci-pipeline.md](references/ci-pipeline.md)** — Full CI schema specification (v0.2), step fields, complete examples per framework
 - **[references/landscape-deployments.md](references/landscape-deployments.md)** — Multi-service v0.2 configs, private networking, managed services (Postgres, Redis), path routing
 - **[references/deployment-guide.md](references/deployment-guide.md)** — Custom domains, horizontal scaling, deployment modes, environment variables, DNS setup, zero-downtime releases
 - **[references/cli-and-api.md](references/cli-and-api.md)** — cs-go CLI commands, Public API endpoints, GitHub Actions integration, GitLab/Bitbucket CI
